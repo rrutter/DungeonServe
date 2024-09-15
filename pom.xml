@@ -11,7 +11,7 @@
     <groupId>com.dungeon</groupId>
     <artifactId>Dungeon-Serve</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <name>Dungeon-Serve</name>
     <description>Dungeon-Serve</description>
     <url/>
