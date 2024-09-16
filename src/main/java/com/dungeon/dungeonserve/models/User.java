@@ -13,7 +13,6 @@ public class User {
     private String email;
     private String picture;
 
-    // Constructor
     public User() {
     }
 
@@ -23,7 +22,6 @@ public class User {
         this.picture = picture;
     }
 
-    // Getters and Setters
 
     public Long getId() {
         return id;
