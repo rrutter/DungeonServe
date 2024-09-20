@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/characters")
 public class CharacterController {
@@ -16,19 +18,24 @@ public class CharacterController {
     private CharacterService characterService;
 
     @Autowired
-    private UserService userService;  // Assuming you have a UserService to fetch user details
+    private UserService userService;
 
     @PostMapping("/create")
     public ResponseEntity<Character> createCharacter(@RequestBody Character character, @RequestParam Long userId) {
         // Fetch the user to tie the character to
         User user = userService.findById(userId);
         if (user == null) {
-            return ResponseEntity.badRequest().build();  // Handle case where user doesn't exist
+            return ResponseEntity.badRequest().build();
         }
         character.setUser(user);
 
         // Create and save character
         Character savedCharacter = characterService.createCharacter(character);
         return ResponseEntity.ok(savedCharacter);
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<Character> getUserCharacters(@PathVariable Long userId) {
+        return characterService.getCharactersByUserId(userId);
     }
 }
