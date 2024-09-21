@@ -57,4 +57,18 @@ public class CharacterController {
 
         return ResponseEntity.ok(locationData);
     }
+
+    @GetMapping("/enter-town/{characterId}")
+    public ResponseEntity<String> enterTown(@PathVariable Long characterId) {
+        Character character = characterService.findCharacterById(characterId);
+        if (character == null) {
+            return ResponseEntity.badRequest().body("Character not found");
+        }
+
+        // If it's the first time entering the town, assign the Nomad guild
+        characterService.assignDefaultGuild(character);
+
+        return ResponseEntity.ok("Character entered the town and guild assignment verified.");
+    }
+
 }

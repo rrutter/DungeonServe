@@ -1,6 +1,8 @@
 package com.dungeon.dungeonserve.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "characters")
@@ -12,7 +14,8 @@ public class Character {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;  // Assuming you have a User entity representing accounts
+    @JsonIgnoreProperties("characters")  // Prevent recursion
+    private User user;
 
     private String name;
     private String race;
@@ -28,7 +31,6 @@ public class Character {
 
     private int gold = 1500;
     private int bankGold = 0;
-    private int experience = 0;
     private int attackPoints = 0;
     private int defensePoints = 0;
     private int lightningResist = 0;
@@ -36,8 +38,6 @@ public class Character {
     private int frostResist = 0;
     private int kills = 0;
     private int deaths = 0;
-    private int level = 1;
-    private int age = 16;
     private int hitPoints = 25;
     private int manaPoints = 10;
     private int totalHitPoints = 25;
@@ -47,8 +47,12 @@ public class Character {
     private int xPosition = 0;
     private int yPosition = 0;
 
-    private Long guildId = 1L;
+    @OneToMany(mappedBy = "character", cascade = CascadeType.ALL)
+    private List<CharacterGuild> characterGuilds;
 
+    private Long guildId = 1L; // The currently active guild
+
+    // Getters and Setters for all fields, including characterGuilds
     public Long getId() {
         return id;
     }
@@ -161,14 +165,6 @@ public class Character {
         this.bankGold = bankGold;
     }
 
-    public int getExperience() {
-        return experience;
-    }
-
-    public void setExperience(int experience) {
-        this.experience = experience;
-    }
-
     public int getAttackPoints() {
         return attackPoints;
     }
@@ -225,22 +221,6 @@ public class Character {
         this.deaths = deaths;
     }
 
-    public int getLevel() {
-        return level;
-    }
-
-    public void setLevel(int level) {
-        this.level = level;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
     public int getHitPoints() {
         return hitPoints;
     }
@@ -295,6 +275,14 @@ public class Character {
 
     public void setyPosition(int yPosition) {
         this.yPosition = yPosition;
+    }
+
+    public List<CharacterGuild> getCharacterGuilds() {
+        return characterGuilds;
+    }
+
+    public void setCharacterGuilds(List<CharacterGuild> characterGuilds) {
+        this.characterGuilds = characterGuilds;
     }
 
     public Long getGuildId() {
