@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/characters")
@@ -37,5 +39,22 @@ public class CharacterController {
     @GetMapping("/user/{userId}")
     public List<Character> getUserCharacters(@PathVariable Long userId) {
         return characterService.getCharactersByUserId(userId);
+    }
+
+    // New endpoint to get character location and coordinates
+    @GetMapping("/{characterId}/location")
+    public ResponseEntity<Map<String, Object>> getCharacterLocation(@PathVariable Long characterId) {
+        Character character = characterService.findCharacterById(characterId);
+        if (character == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Prepare the response containing the locationId, xPosition, and yPosition
+        Map<String, Object> locationData = new HashMap<>();
+        locationData.put("locationId", character.getLocationId());
+        locationData.put("xPosition", character.getxPosition());
+        locationData.put("yPosition", character.getyPosition());
+
+        return ResponseEntity.ok(locationData);
     }
 }

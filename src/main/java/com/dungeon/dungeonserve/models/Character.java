@@ -40,12 +40,14 @@ public class Character {
     private int age = 16;
     private int hitPoints = 25;
     private int manaPoints = 10;
+    private int totalHitPoints = 25;
+    private int totalManaPoints = 10;
+
+    private Long locationId = 0L;
+    private int xPosition = 0;
+    private int yPosition = 0;
 
     private Long guildId = 1L;
-
-    // Getters and Setters
-
-    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -253,6 +255,46 @@ public class Character {
 
     public void setManaPoints(int manaPoints) {
         this.manaPoints = manaPoints;
+    }
+
+    public int getTotalHitPoints() {
+        return totalHitPoints;
+    }
+
+    public void setTotalHitPoints(int totalHitPoints) {
+        this.totalHitPoints = totalHitPoints;
+    }
+
+    public int getTotalManaPoints() {
+        return totalManaPoints;
+    }
+
+    public void setTotalManaPoints(int totalManaPoints) {
+        this.totalManaPoints = totalManaPoints;
+    }
+
+    public Long getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(Long locationId) {
+        this.locationId = locationId;
+    }
+
+    public int getxPosition() {
+        return xPosition;
+    }
+
+    public void setxPosition(int xPosition) {
+        this.xPosition = xPosition;
+    }
+
+    public int getyPosition() {
+        return yPosition;
+    }
+
+    public void setyPosition(int yPosition) {
+        this.yPosition = yPosition;
     }
 
     public Long getGuildId() {
