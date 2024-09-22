@@ -14,15 +14,12 @@ public class CharacterWornController {
     @Autowired
     private CharacterWornService characterWornService;
 
-    // Get all equipment the character is currently wearing
     @GetMapping
     public ResponseEntity<CharacterWornDTO> getCharacterWorn(@PathVariable Long characterId) {
-        return characterWornService.getCharacterWorn(characterId)
-                .map(characterWorn -> {
-                    CharacterWornDTO dto = characterWornService.mapToDTO(characterWorn);
-                    return ResponseEntity.ok(dto);
-                })
-                .orElse(ResponseEntity.notFound().build());
+        CharacterWorn characterWorn = characterWornService.getOrCreateCharacterWorn(characterId);
+        CharacterWornDTO dto = characterWornService.mapToDTO(characterWorn);
+
+        return ResponseEntity.ok(dto);
     }
 
     // Equip an item to a specific slot

@@ -1,11 +1,13 @@
 package com.dungeon.dungeonserve.controllers;
 
+import com.dungeon.dungeonserve.dto.GuildDTO;
 import com.dungeon.dungeonserve.models.Guild;
 import com.dungeon.dungeonserve.services.GuildService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/guilds")
@@ -16,14 +18,29 @@ public class GuildController {
 
     // Get a list of all guilds (IDs and Names)
     @GetMapping("/list")
-    public List<Guild> getAllGuilds() {
-        return guildService.getAllGuilds();
+    public List<GuildDTO> getAllGuilds() {
+        return guildService.getAllGuilds().stream().map(guild -> {
+            GuildDTO dto = new GuildDTO();
+            dto.setId(guild.getId());
+            dto.setName(guild.getName());
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     // Get the requirements of a guild by ID
     @GetMapping("/{guildId}/requirements")
-    public Guild getGuildById(@PathVariable Long guildId) {
-        return guildService.getGuildById(guildId);
+    public GuildDTO getGuildById(@PathVariable Long guildId) {
+        Guild guild = guildService.getGuildById(guildId);
+        GuildDTO dto = new GuildDTO();
+        dto.setId(guild.getId());
+        dto.setName(guild.getName());
+        dto.setStrengthRequirement(guild.getStrengthRequirement());
+        dto.setIntelligenceRequirement(guild.getIntelligenceRequirement());
+        dto.setWisdomRequirement(guild.getWisdomRequirement());
+        dto.setDexterityRequirement(guild.getDexterityRequirement());
+        dto.setConstitutionRequirement(guild.getConstitutionRequirement());
+        dto.setCharismaRequirement(guild.getCharismaRequirement());
+        return dto;
     }
 
     // Create or update a guild (for future use)

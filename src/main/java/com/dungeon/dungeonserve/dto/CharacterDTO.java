@@ -1,85 +1,40 @@
-package com.dungeon.dungeonserve.models;
+package com.dungeon.dungeonserve.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
 import java.util.List;
 
-@Entity
-@Table(name = "characters")
-public class Character {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class CharacterDTO {
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnoreProperties("characters")  // Prevent recursion
-    private User user;
-
-    @OneToMany(mappedBy = "character", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("character")  // Prevent recursion with InventorySlot
-    private List<InventorySlot> inventorySlots;
-
-    public List<InventorySlot> getInventorySlots() {
-        return inventorySlots;
-    }
-
-    public void setInventorySlots(List<InventorySlot> inventorySlots) {
-        this.inventorySlots = inventorySlots;
-    }
-
-
     private String name;
     private String race;
     private String gender;
     private String alignment;
-
     private int strength;
     private int dexterity;
     private int constitution;
     private int intelligence;
     private int wisdom;
     private int charisma;
+    private int gold;
+    private int bankGold;
+    private int attackPoints;
+    private int defensePoints;
+    private int lightningResist;
+    private int fireResist;
+    private int frostResist;
+    private int hitPoints;
+    private int manaPoints;
+    private Long locationId;
+    private List<InventorySlotDTO> inventorySlots;
+    private List<CharacterGuildDTO> characterGuilds;
 
-    private int gold = 1500;
-    private int bankGold = 0;
-    private int attackPoints = 0;
-    private int defensePoints = 0;
-    private int lightningResist = 0;
-    private int fireResist = 0;
-    private int frostResist = 0;
-    private int kills = 0;
-    private int deaths = 0;
-    private int hitPoints = 25;
-    private int manaPoints = 10;
-    private int totalHitPoints = 25;
-    private int totalManaPoints = 10;
+    // Getters and Setters
 
-    private Long locationId = 0L;
-    private int xPosition = 0;
-    private int yPosition = 0;
-
-    @OneToMany(mappedBy = "character", cascade = CascadeType.ALL)
-    private List<CharacterGuild> characterGuilds;
-
-    private Long guildId = 1L; // The currently active guild
-
-    // Getters and Setters for all fields, including characterGuilds
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public String getName() {
@@ -218,22 +173,6 @@ public class Character {
         this.frostResist = frostResist;
     }
 
-    public int getKills() {
-        return kills;
-    }
-
-    public void setKills(int kills) {
-        this.kills = kills;
-    }
-
-    public int getDeaths() {
-        return deaths;
-    }
-
-    public void setDeaths(int deaths) {
-        this.deaths = deaths;
-    }
-
     public int getHitPoints() {
         return hitPoints;
     }
@@ -250,22 +189,6 @@ public class Character {
         this.manaPoints = manaPoints;
     }
 
-    public int getTotalHitPoints() {
-        return totalHitPoints;
-    }
-
-    public void setTotalHitPoints(int totalHitPoints) {
-        this.totalHitPoints = totalHitPoints;
-    }
-
-    public int getTotalManaPoints() {
-        return totalManaPoints;
-    }
-
-    public void setTotalManaPoints(int totalManaPoints) {
-        this.totalManaPoints = totalManaPoints;
-    }
-
     public Long getLocationId() {
         return locationId;
     }
@@ -274,35 +197,19 @@ public class Character {
         this.locationId = locationId;
     }
 
-    public int getxPosition() {
-        return xPosition;
+    public List<InventorySlotDTO> getInventorySlots() {
+        return inventorySlots;
     }
 
-    public void setxPosition(int xPosition) {
-        this.xPosition = xPosition;
+    public void setInventorySlots(List<InventorySlotDTO> inventorySlots) {
+        this.inventorySlots = inventorySlots;
     }
 
-    public int getyPosition() {
-        return yPosition;
-    }
-
-    public void setyPosition(int yPosition) {
-        this.yPosition = yPosition;
-    }
-
-    public List<CharacterGuild> getCharacterGuilds() {
+    public List<CharacterGuildDTO> getCharacterGuilds() {
         return characterGuilds;
     }
 
-    public void setCharacterGuilds(List<CharacterGuild> characterGuilds) {
+    public void setCharacterGuilds(List<CharacterGuildDTO> characterGuilds) {
         this.characterGuilds = characterGuilds;
-    }
-
-    public Long getGuildId() {
-        return guildId;
-    }
-
-    public void setGuildId(Long guildId) {
-        this.guildId = guildId;
     }
 }

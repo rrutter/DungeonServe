@@ -1,5 +1,6 @@
 package com.dungeon.dungeonserve.controllers;
 
+import com.dungeon.dungeonserve.dto.CharacterGuildDTO;
 import com.dungeon.dungeonserve.models.Character;
 import com.dungeon.dungeonserve.models.CharacterGuild;
 import com.dungeon.dungeonserve.models.Guild;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/characters")
@@ -26,7 +28,7 @@ public class CharacterGuildController {
     private GuildService guildService;
 
     @GetMapping("/{characterId}/guilds")
-    public List<CharacterGuild> getGuildsForCharacter(@PathVariable Long characterId) {
+    public List<CharacterGuildDTO> getGuildsForCharacter(@PathVariable Long characterId) {
         List<CharacterGuild> characterGuilds = characterGuildService.getGuildsForCharacter(characterId);
 
         // Get the character's currently active guild ID (as the source of truth)
@@ -52,8 +54,15 @@ public class CharacterGuildController {
             characterGuilds = characterGuildService.getGuildsForCharacter(characterId);
         }
 
-        // Return the character's guilds (including any newly created one)
-        return characterGuilds;
+        // Return the character's guilds as DTOs
+        return characterGuilds.stream().map(guild -> {
+            CharacterGuildDTO dto = new CharacterGuildDTO();
+            dto.setId(guild.getGuild().getId());
+            dto.setName(guild.getGuild().getName());
+            dto.setLevel(guild.getLevel());
+            dto.setExperience(guild.getExperience());
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     @PostMapping("/guilds")

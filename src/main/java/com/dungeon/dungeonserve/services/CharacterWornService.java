@@ -4,6 +4,7 @@ import com.dungeon.dungeonserve.dto.CharacterWornDTO;
 import com.dungeon.dungeonserve.models.Character;
 import com.dungeon.dungeonserve.models.CharacterWorn;
 import com.dungeon.dungeonserve.models.Equipment;
+import com.dungeon.dungeonserve.repository.CharacterRepository;
 import com.dungeon.dungeonserve.repository.CharacterWornRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,17 +17,22 @@ public class CharacterWornService {
     @Autowired
     private CharacterWornRepository characterWornRepository;
 
+    @Autowired
+    private CharacterRepository characterRepository;
+
     // Find the CharacterWorn entry by characterId
     public Optional<CharacterWorn> getCharacterWorn(Long characterId) {
         return characterWornRepository.findByCharacterId(characterId);
     }
 
-    // Method to get or create a CharacterWorn if it doesn't exist
     public CharacterWorn getOrCreateCharacterWorn(Long characterId) {
+        Character character = characterRepository.findById(characterId)
+                .orElseThrow(() -> new IllegalArgumentException("Character not found"));
+
         return characterWornRepository.findByCharacterId(characterId)
                 .orElseGet(() -> {
                     CharacterWorn newCharacterWorn = new CharacterWorn();
-                    newCharacterWorn.setCharacter(new Character());
+                    newCharacterWorn.setCharacter(character); // Set the existing character
                     return characterWornRepository.save(newCharacterWorn);
                 });
     }
