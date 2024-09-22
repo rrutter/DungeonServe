@@ -13,18 +13,22 @@ public class EquipmentService {
     @Autowired
     private EquipmentRepository equipmentRepository;
 
+    // Fetch all equipment
     public List<Equipment> getAllEquipment() {
         return equipmentRepository.findAll();
     }
 
+    // Fetch a single piece of equipment by its ID
     public Equipment getEquipmentById(Long id) {
         return equipmentRepository.findById(id).orElse(null);
     }
 
-    public Equipment createOrUpdateEquipment(Equipment equipment) {
+    // Save or update an equipment
+    public Equipment saveEquipment(Equipment equipment) {
         return equipmentRepository.save(equipment);
     }
 
+    // Delete a piece of equipment by its ID
     public void deleteEquipment(Long id) {
         equipmentRepository.deleteById(id);
     }

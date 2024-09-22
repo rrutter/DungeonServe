@@ -12,7 +12,7 @@ public class Equipment {
 
     private String name;
     private String type;  // 'Weapon', 'Armor', 'Accessory', 'Consumable'
-    private String handedness;  // 'One-Handed', 'Two-Handed'
+    private int handedness;  // 1 for one-handed, 2 for two-handed
     private int damageMin;
     private int damageMax;
     private int defense;
@@ -35,6 +35,14 @@ public class Equipment {
     private boolean isCursed;
     private String special;
     private String special2;
+    private String iconFileName;
+    private String wornSlot;
+
+    private int guild1RequiredLevel;
+    private int guild2RequiredLevel;
+    private int guild3RequiredLevel;
+    private int guild4RequiredLevel;
+    private int guild5RequiredLevel;
 
     // Getters and Setters
 
@@ -62,11 +70,11 @@ public class Equipment {
         this.type = type;
     }
 
-    public String getHandedness() {
+    public int getHandedness() {
         return handedness;
     }
 
-    public void setHandedness(String handedness) {
+    public void setHandedness(int handedness) {
         this.handedness = handedness;
     }
 
@@ -245,5 +253,60 @@ public class Equipment {
     public void setSpecial2(String special2) {
         this.special2 = special2;
     }
-}
 
+    public String getIconUrl() {
+        return iconFileName;
+    }
+
+    public void setIconUrl(String fileName) {
+        this.iconFileName = fileName;
+    }
+
+    public int getGuild1RequiredLevel() {
+        return guild1RequiredLevel;
+    }
+
+    public void setGuild1RequiredLevel(int guild1RequiredLevel) {
+        this.guild1RequiredLevel = guild1RequiredLevel;
+    }
+
+    public int getGuild2RequiredLevel() {
+        return guild2RequiredLevel;
+    }
+
+    public void setGuild2RequiredLevel(int guild2RequiredLevel) {
+        this.guild2RequiredLevel = guild2RequiredLevel;
+    }
+
+    public int getGuild3RequiredLevel() {
+        return guild3RequiredLevel;
+    }
+
+    public void setGuild3RequiredLevel(int guild3RequiredLevel) {
+        this.guild3RequiredLevel = guild3RequiredLevel;
+    }
+
+    public int getGuild4RequiredLevel() {
+        return guild4RequiredLevel;
+    }
+
+    public void setGuild4RequiredLevel(int guild4RequiredLevel) {
+        this.guild4RequiredLevel = guild4RequiredLevel;
+    }
+
+    public int getGuild5RequiredLevel() {
+        return guild5RequiredLevel;
+    }
+
+    public void setGuild5RequiredLevel(int guild5RequiredLevel) {
+        this.guild5RequiredLevel = guild5RequiredLevel;
+    }
+
+    public String getWornSlot() {
+        return wornSlot;
+    }
+
+    public void setWornSlot(String wornSlot) {
+        this.wornSlot = wornSlot;
+    }
+}

@@ -23,16 +23,13 @@ public class EquipmentController {
     @GetMapping("/{id}")
     public ResponseEntity<Equipment> getEquipmentById(@PathVariable Long id) {
         Equipment equipment = equipmentService.getEquipmentById(id);
-        if (equipment != null) {
-            return ResponseEntity.ok(equipment);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return (equipment != null) ? ResponseEntity.ok(equipment) : ResponseEntity.notFound().build();
     }
 
-    @PostMapping
-    public Equipment createOrUpdateEquipment(@RequestBody Equipment equipment) {
-        return equipmentService.createOrUpdateEquipment(equipment);
+    @PostMapping("/create")
+    public ResponseEntity<Equipment> createEquipment(@RequestBody Equipment equipment) {
+        Equipment savedEquipment = equipmentService.saveEquipment(equipment);
+        return ResponseEntity.ok(savedEquipment);
     }
 
     @DeleteMapping("/{id}")
@@ -41,3 +38,4 @@ public class EquipmentController {
         return ResponseEntity.noContent().build();
     }
 }
+
