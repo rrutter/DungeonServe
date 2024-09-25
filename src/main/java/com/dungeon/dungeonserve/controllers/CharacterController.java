@@ -8,6 +8,7 @@ import com.dungeon.dungeonserve.services.CharacterService;
 import com.dungeon.dungeonserve.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -24,11 +25,11 @@ public class CharacterController {
     @Autowired
     private UserService userService;
 
-    // Create a new character and associate it with a user
+    // Create a new character and associate it with the authenticated user
     @PostMapping("/create")
-    public ResponseEntity<CharacterDTO> createCharacter(@RequestBody Character character, @RequestParam Long userId) {
-        // Fetch the user to tie the character to
-        User user = userService.findById(userId);
+    public ResponseEntity<CharacterDTO> createCharacter(@RequestBody Character character, Authentication authentication) {
+        // Fetch the authenticated user
+        User user = userService.getAuthenticatedUser();
         if (user == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -42,10 +43,15 @@ public class CharacterController {
         return ResponseEntity.ok(characterDTO);
     }
 
-    // Retrieve all characters for a specific user
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<CharacterDTO>> getUserCharacters(@PathVariable Long userId) {
-        List<CharacterDTO> characters = characterService.getCharactersByUserId(userId);
+    // Retrieve all characters for the authenticated user
+    @GetMapping("/user")
+    public ResponseEntity<List<CharacterDTO>> getUserCharacters() {
+        User user = userService.getAuthenticatedUser();
+        if (user == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        List<CharacterDTO> characters = characterService.getCharactersByUserId(user.getId());
         return ResponseEntity.ok(characters);
     }
 
