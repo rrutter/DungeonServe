@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/shop")
@@ -37,9 +38,9 @@ public class ShopItemController {
         return ResponseEntity.noContent().build();
     }
 
-    // Buying an item securely
     @PostMapping("/buy")
-    public ResponseEntity<String> buyItem(@RequestParam Long shopItemId) {
+    public ResponseEntity<String> buyItem(@RequestBody Map<String, Long> requestBody) {
+        Long shopItemId = requestBody.get("itemId");
         try {
             User currentUser = userService.getAuthenticatedUser();
             shopService.buyItem(currentUser.getId(), shopItemId);
@@ -48,6 +49,7 @@ public class ShopItemController {
             return ResponseEntity.badRequest().body("Failed to purchase item: " + e.getMessage());
         }
     }
+
 
     // Selling an item securely
     @PostMapping("/sell")

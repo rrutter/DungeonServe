@@ -44,8 +44,7 @@ public class ShopItemService {
         shopItemRepository.deleteById(shopItemId);
     }
 
-    // Method to handle buying an item from the shop
-    public boolean buyItem(Long shopItemId, Long characterId) {
+    public boolean buyItem(Long characterId, Long shopItemId) {
         Optional<ShopItem> shopItemOptional = shopItemRepository.findById(shopItemId);
         if (shopItemOptional.isPresent()) {
             ShopItem shopItem = shopItemOptional.get();
@@ -68,6 +67,7 @@ public class ShopItemService {
         }
         return false; // Purchase failed
     }
+
 
     // Method to handle selling an item to the shop
     public boolean sellItem(Long characterId, Long equipmentId) {
