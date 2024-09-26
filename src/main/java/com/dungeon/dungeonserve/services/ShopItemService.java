@@ -68,34 +68,40 @@ public class ShopItemService {
         return false; // Purchase failed
     }
 
+    public boolean sellItem(Long characterId, int slotNumber) {
+        // Find the inventory slot based on characterId and slotNumber (specific to this character)
+        Optional<InventorySlot> slotWithItemOpt = inventorySlotRepository.findByCharacterIdAndSlotNumber(characterId, slotNumber);
 
-    // Method to handle selling an item to the shop
-    public boolean sellItem(Long characterId, Long equipmentId) {
-        // Find the inventory slot with the equipment
-        InventorySlot slotWithItem = inventorySlotRepository.findByCharacterIdAndEquipmentId(characterId, equipmentId);
-        if (slotWithItem != null && slotWithItem.getEquipment() != null) {
-            Equipment equipment = slotWithItem.getEquipment();
+        if (slotWithItemOpt.isPresent()) {
+            InventorySlot slotWithItem = slotWithItemOpt.get();
 
-            // Find or create the ShopItem for this equipment
-            ShopItem shopItem = shopItemRepository.findByEquipment(equipment)
-                    .orElseGet(() -> {
-                        ShopItem newShopItem = new ShopItem();
-                        newShopItem.setEquipment(equipment);
-                        newShopItem.setQuantity(0); // Start with 0 if the item wasn't already in the shop
-                        newShopItem.setInfiniteStock(false); // Selling items to shop should not be infinite stock
-                        return newShopItem;
-                    });
+            if (slotWithItem.getEquipment() != null) {
+                Equipment equipment = slotWithItem.getEquipment();
 
-            // Increment shop quantity
-            shopItem.setQuantity(shopItem.getQuantity() + 1);
-            shopItemRepository.save(shopItem);
+                // Check if ShopItem for the equipment already exists
+                Optional<ShopItem> shopItemOpt = shopItemRepository.findByEquipment(equipment);
 
-            // Remove the item from the player's inventory
-            slotWithItem.setEquipment(null);
-            inventorySlotRepository.save(slotWithItem);
+                ShopItem shopItem = shopItemOpt.orElseGet(() -> {
+                    ShopItem newShopItem = new ShopItem();
+                    newShopItem.setEquipment(equipment);
+                    newShopItem.setQuantity(0);  // Start with 0 if not already in the shop
+                    newShopItem.setInfiniteStock(false);  // Selling items should not be infinite stock
+                    return shopItemRepository.save(newShopItem);
+                });
 
-            return true; // Sale successful
+                // Increment the shop quantity and save
+                shopItem.setQuantity(shopItem.getQuantity() + 1);
+                shopItemRepository.save(shopItem);
+
+                // Remove the item from the player's inventory (clear the equipment slot)
+                slotWithItem.setEquipment(null);
+                inventorySlotRepository.save(slotWithItem);
+
+                return true;  // Sale successful
+            }
         }
-        return false; // Sale failed
+        return false;  // Sale failed if no matching slot or item found
     }
+
+
 }

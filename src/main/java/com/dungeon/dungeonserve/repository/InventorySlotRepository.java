@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface InventorySlotRepository extends JpaRepository<InventorySlot, Long> {
@@ -19,4 +20,8 @@ public interface InventorySlotRepository extends JpaRepository<InventorySlot, Lo
     InventorySlot findByCharacterIdAndEquipmentId(Long characterId, Long equipmentId);
 
     InventorySlot findFirstByCharacterIdAndEquipmentIsNull(Long characterId);
+
+    Optional<InventorySlot> findByCharacterIdAndSlotNumber(Long characterId, int slotNumber);
+
 }
+

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,27 +40,42 @@ public class ShopItemController {
     }
 
     @PostMapping("/buy")
-    public ResponseEntity<String> buyItem(@RequestBody Map<String, Long> requestBody) {
+    public ResponseEntity<Map<String, String>> buyItem(@RequestBody Map<String, Long> requestBody) {
         Long shopItemId = requestBody.get("itemId");
         try {
             User currentUser = userService.getAuthenticatedUser();
             shopService.buyItem(currentUser.getId(), shopItemId);
-            return ResponseEntity.ok("Item purchased successfully!");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Item purchased successfully!");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Failed to purchase item: " + e.getMessage());
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Failed to purchase item: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 
-
-    // Selling an item securely
     @PostMapping("/sell")
-    public ResponseEntity<String> sellItem(@RequestParam Long equipmentId) {
+    public ResponseEntity<Map<String, String>> sellItem(@RequestBody Map<String, Integer> requestBody) {
+        int slotNumber = requestBody.get("slotNumber");
         try {
             User currentUser = userService.getAuthenticatedUser();
-            shopService.sellItem(currentUser.getId(), equipmentId);
-            return ResponseEntity.ok("Item sold successfully!");
+            boolean success = shopService.sellItem(currentUser.getId(), slotNumber);
+            if (success) {
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Item sold successfully!");
+                return ResponseEntity.ok(response);
+            } else {
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("message", "Failed to sell item");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Failed to sell item: " + e.getMessage());
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", "Failed to sell item: " + e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
+
+
 }
