@@ -9,7 +9,7 @@ public class GuildDTO {
     private int dexterityRequirement;
     private int constitutionRequirement;
     private int charismaRequirement;
-    private int level;
+    //private int level;
     private int currentExperience;
 
     // Getters and Setters
@@ -76,7 +76,7 @@ public class GuildDTO {
     public void setCharismaRequirement(int charismaRequirement) {
         this.charismaRequirement = charismaRequirement;
     }
-
+/*
     public int getLevel() {
         return level;
     }
@@ -84,7 +84,7 @@ public class GuildDTO {
     public void setLevel(int level) {
         this.level = level;
     }
-
+*/
     public int getCurrentExperience() {
         return currentExperience;
     }

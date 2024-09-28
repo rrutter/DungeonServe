@@ -19,7 +19,7 @@ public class Guild {
     private int constitutionRequirement;
     private int charismaRequirement;
 
-    private int level = 1;
+   // private int level = 1;
     private int currentExperience = 0;
 
     public Long getId() {
@@ -85,7 +85,7 @@ public class Guild {
     public void setCharismaRequirement(int charismaRequirement) {
         this.charismaRequirement = charismaRequirement;
     }
-
+/*
     public int getLevel() {
         return level;
     }
@@ -93,7 +93,7 @@ public class Guild {
     public void setLevel(int level) {
         this.level = level;
     }
-
+*/
     public int getCurrentExperience() {
         return currentExperience;
     }

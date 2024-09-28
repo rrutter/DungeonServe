@@ -29,7 +29,6 @@ public class GuildController {
             dto.setConstitutionRequirement(guild.getConstitutionRequirement());
             dto.setCharismaRequirement(guild.getCharismaRequirement());
             dto.setCurrentExperience(guild.getCurrentExperience());
-            dto.setLevel(guild.getLevel()); // you mentioned level isn't used, remove if needed
             return dto;
         }).collect(Collectors.toList());
     }
