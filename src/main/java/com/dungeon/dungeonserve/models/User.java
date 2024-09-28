@@ -12,6 +12,7 @@ public class User {
     private String name;
     private String email;
     private String picture;
+    private Long activeCharacterId;
 
     public User() {
     }
@@ -20,6 +21,14 @@ public class User {
         this.name = name;
         this.email = email;
         this.picture = picture;
+    }
+
+    public Long getActiveCharacterId() {
+        return activeCharacterId;
+    }
+
+    public void setActiveCharacterId(Long activeCharacterId) {
+        this.activeCharacterId = activeCharacterId;
     }
 
 

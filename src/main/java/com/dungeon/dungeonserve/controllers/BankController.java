@@ -19,46 +19,51 @@ public class BankController {
     @Autowired
     private UserService userService;
 
-    // Get the bank information for the authenticated user's character
+    // Get the bank information for the authenticated user's active character
     @GetMapping
-    public ResponseEntity<BankDTO> getBank(@RequestParam Long characterId, Authentication authentication) {
+    public ResponseEntity<BankDTO> getBank(Authentication authentication) {
         User user = userService.getAuthenticatedUser();  // Get the authenticated user
-        BankDTO bank = bankService.getBankForCharacter(characterId, user.getId());  // Validate character ownership
+        Long activeCharacterId = userService.getActiveCharacterId(user);  // Get the active character
+        BankDTO bank = bankService.getBankForCharacter(activeCharacterId);  // Get bank info for active character
         if (bank == null) {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(bank);
     }
 
-    // Deposit gold into the bank
+    // Deposit gold into the bank for the active character
     @PostMapping("/deposit")
-    public ResponseEntity<String> depositGold(@RequestParam Long characterId, @RequestBody int amount, Authentication authentication) {
+    public ResponseEntity<String> depositGold(@RequestBody int amount, Authentication authentication) {
         User user = userService.getAuthenticatedUser();
-        bankService.depositGold(characterId, user.getId(), amount);  // Validate character ownership
+        Long activeCharacterId = userService.getActiveCharacterId(user);  // Get the active character
+        bankService.depositGold(activeCharacterId, amount);  // Deposit gold for active character
         return ResponseEntity.ok("Gold deposited.");
     }
 
-    // Withdraw gold from the bank
+    // Withdraw gold from the bank for the active character
     @PostMapping("/withdraw")
-    public ResponseEntity<String> withdrawGold(@RequestParam Long characterId, @RequestBody int amount, Authentication authentication) {
+    public ResponseEntity<String> withdrawGold(@RequestBody int amount, Authentication authentication) {
         User user = userService.getAuthenticatedUser();
-        bankService.withdrawGold(characterId, user.getId(), amount);  // Validate character ownership
+        Long activeCharacterId = userService.getActiveCharacterId(user);  // Get the active character
+        bankService.withdrawGold(activeCharacterId, amount);  // Withdraw gold for active character
         return ResponseEntity.ok("Gold withdrawn.");
     }
 
-    // Move an item from inventory to the bank
+    // Move an item from inventory to the bank for the active character
     @PostMapping("/move-to-bank")
-    public ResponseEntity<String> moveToBank(@RequestParam Long characterId, @RequestBody Long inventorySlotId, Authentication authentication) {
+    public ResponseEntity<String> moveToBank(@RequestBody Long inventorySlotId, Authentication authentication) {
         User user = userService.getAuthenticatedUser();
-        bankService.moveToBank(characterId, user.getId(), inventorySlotId);  // Validate character ownership
+        Long activeCharacterId = userService.getActiveCharacterId(user);  // Get the active character
+        bankService.moveToBank(activeCharacterId, inventorySlotId);  // Move item for active character
         return ResponseEntity.ok("Item moved to bank.");
     }
 
-    // Move an item from the bank to the inventory
+    // Move an item from the bank to the inventory for the active character
     @PostMapping("/move-to-inventory")
-    public ResponseEntity<String> moveToInventory(@RequestParam Long characterId, @RequestBody Long bankSlotId, Authentication authentication) {
+    public ResponseEntity<String> moveToInventory(@RequestBody Long bankSlotId, Authentication authentication) {
         User user = userService.getAuthenticatedUser();
-        bankService.moveToInventory(characterId, user.getId(), bankSlotId);  // Validate character ownership
+        Long activeCharacterId = userService.getActiveCharacterId(user);  // Get the active character
+        bankService.moveToInventory(activeCharacterId, bankSlotId);  // Move item for active character
         return ResponseEntity.ok("Item moved to inventory.");
     }
 }

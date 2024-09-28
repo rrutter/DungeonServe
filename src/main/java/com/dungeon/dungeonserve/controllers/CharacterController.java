@@ -117,4 +117,13 @@ public class CharacterController {
         }
     }
 
+    @PostMapping("/set-active")
+    public ResponseEntity<String> setActiveCharacter(@RequestBody Long characterId, Authentication authentication) {
+        User user = userService.getAuthenticatedUser();
+        userService.setActiveCharacter(user.getId(), characterId);
+        return ResponseEntity.ok("Active character set.");
+        }
+
+
+
 }

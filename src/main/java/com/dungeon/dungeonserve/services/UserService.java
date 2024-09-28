@@ -59,4 +59,14 @@ public class UserService {
         }
     }
 
+    public void setActiveCharacter(Long userId, Long characterId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setActiveCharacterId(characterId);
+        userRepository.save(user);
+    }
+
+    public Long getActiveCharacterId(User user) {
+        return user.getActiveCharacterId();
+    }
+
 }
