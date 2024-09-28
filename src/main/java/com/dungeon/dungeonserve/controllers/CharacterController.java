@@ -92,4 +92,29 @@ public class CharacterController {
         List<InventorySlotDTO> inventorySlots = characterService.getInventorySlotsByCharacterId(characterId);
         return ResponseEntity.ok(inventorySlots);
     }
+
+    @PostMapping("/join-guild")
+    public ResponseEntity<?> joinGuild(@RequestBody Map<String, Long> guildData, Authentication authentication) {
+        Long guildId = guildData.get("guildId");
+        User user = userService.getAuthenticatedUser();
+
+        if (user == null) {
+            return ResponseEntity.badRequest().body("User not authenticated.");
+        }
+
+        // Fetch the selected character from the user service or character service
+        Character character = characterService.findActiveCharacterByUser(user);
+
+        if (character != null && guildId != null) {
+            boolean success = characterService.joinGuild(character, guildId);
+            if (success) {
+                return ResponseEntity.ok("Character joined the guild successfully.");
+            } else {
+                return ResponseEntity.badRequest().body("Character does not meet the requirements for this guild.");
+            }
+        } else {
+            return ResponseEntity.badRequest().body("Character or Guild not found.");
+        }
+    }
+
 }

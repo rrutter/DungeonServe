@@ -16,16 +16,24 @@ public class GuildController {
     @Autowired
     private GuildService guildService;
 
-    // Get a list of all guilds (IDs and Names)
     @GetMapping("/list")
     public List<GuildDTO> getAllGuilds() {
         return guildService.getAllGuilds().stream().map(guild -> {
             GuildDTO dto = new GuildDTO();
             dto.setId(guild.getId());
             dto.setName(guild.getName());
+            dto.setStrengthRequirement(guild.getStrengthRequirement());
+            dto.setIntelligenceRequirement(guild.getIntelligenceRequirement());
+            dto.setWisdomRequirement(guild.getWisdomRequirement());
+            dto.setDexterityRequirement(guild.getDexterityRequirement());
+            dto.setConstitutionRequirement(guild.getConstitutionRequirement());
+            dto.setCharismaRequirement(guild.getCharismaRequirement());
+            dto.setCurrentExperience(guild.getCurrentExperience());
+            dto.setLevel(guild.getLevel()); // you mentioned level isn't used, remove if needed
             return dto;
         }).collect(Collectors.toList());
     }
+
 
     // Get the requirements of a guild by ID
     @GetMapping("/{guildId}/requirements")

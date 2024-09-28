@@ -3,9 +3,8 @@ package com.dungeon.dungeonserve.services;
 import com.dungeon.dungeonserve.dto.CharacterDTO;
 import com.dungeon.dungeonserve.dto.InventorySlotDTO;
 import com.dungeon.dungeonserve.dto.CharacterGuildDTO;
+import com.dungeon.dungeonserve.models.*;
 import com.dungeon.dungeonserve.models.Character;
-import com.dungeon.dungeonserve.models.CharacterGuild;
-import com.dungeon.dungeonserve.models.InventorySlot;
 import com.dungeon.dungeonserve.repository.CharacterGuildRepository;
 import com.dungeon.dungeonserve.repository.CharacterRepository;
 import com.dungeon.dungeonserve.repository.GuildRepository;
@@ -142,5 +141,40 @@ public class CharacterService {
                     return dto;
                 })
                 .collect(Collectors.toList());
+    }
+
+    // Find the user's active character
+    public Character findActiveCharacterByUser(User user) {
+        return characterRepository.findFirstByUser(user);  // Assuming a character has a user reference and one character is active
+    }
+
+    // Join a guild if requirements are met
+    public boolean joinGuild(Character character, Long guildId) {
+        Guild guild = guildRepository.findById(guildId).orElse(null);
+
+        if (guild == null) {
+            return false;
+        }
+
+        // Check if the character meets the guild requirements
+        if (character.getStrength() >= guild.getStrengthRequirement() &&
+                character.getDexterity() >= guild.getDexterityRequirement() &&
+                character.getConstitution() >= guild.getConstitutionRequirement() &&
+                character.getCharisma() >= guild.getCharismaRequirement() &&
+                character.getIntelligence() >= guild.getIntelligenceRequirement() &&
+                character.getWisdom() >= guild.getWisdomRequirement()) {
+
+            // Assign the new guild to the character
+            character.setGuildId(guild.getId());
+            characterRepository.save(character);
+            return true;
+        }
+
+        return false;  // If requirements are not met
+    }
+
+    // Method to save character changes (when joining a guild)
+    public void saveCharacter(Character character) {
+        characterRepository.save(character);
     }
 }
