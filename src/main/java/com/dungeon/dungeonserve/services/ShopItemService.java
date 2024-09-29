@@ -3,6 +3,7 @@ package com.dungeon.dungeonserve.services;
 import com.dungeon.dungeonserve.models.Equipment;
 import com.dungeon.dungeonserve.models.InventorySlot;
 import com.dungeon.dungeonserve.models.ShopItem;
+import com.dungeon.dungeonserve.models.User;
 import com.dungeon.dungeonserve.repository.InventorySlotRepository;
 import com.dungeon.dungeonserve.repository.ShopItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public class ShopItemService {
 
     @Autowired
     private InventorySlotRepository inventorySlotRepository;
+
+    @Autowired
+    private UserService userService;
 
     public List<ShopItem> getAllItems() {
         return shopItemRepository.findAll();
@@ -44,15 +48,18 @@ public class ShopItemService {
         shopItemRepository.deleteById(shopItemId);
     }
 
-    public boolean buyItem(Long characterId, Long shopItemId) {
+    public boolean buyItem(Long userId, Long shopItemId) {
+        User user = userService.findById(userId);
+        Long characterId = user.getActiveCharacterId();  // Get the active character ID from the user
+
         Optional<ShopItem> shopItemOptional = shopItemRepository.findById(shopItemId);
         if (shopItemOptional.isPresent()) {
             ShopItem shopItem = shopItemOptional.get();
             if (shopItem.isInfiniteStock() || shopItem.getQuantity() > 0) {
-                // Find the first empty inventory slot for the character
+                // Find the first empty inventory slot for the active character
                 InventorySlot emptySlot = inventorySlotRepository.findFirstByCharacterIdAndEquipmentIsNull(characterId);
                 if (emptySlot != null) {
-                    // Add the item to the player's inventory
+                    // Add the item to the active character's inventory
                     emptySlot.setEquipment(shopItem.getEquipment());
                     inventorySlotRepository.save(emptySlot);
 
@@ -68,7 +75,10 @@ public class ShopItemService {
         return false; // Purchase failed
     }
 
-    public boolean sellItem(Long characterId, int slotNumber) {
+    public boolean sellItem(Long userId, int slotNumber) {
+        User user = userService.findById(userId);
+        Long characterId = user.getActiveCharacterId();  // Get the active character ID from the user
+
         // Find the inventory slot based on characterId and slotNumber (specific to this character)
         Optional<InventorySlot> slotWithItemOpt = inventorySlotRepository.findByCharacterIdAndSlotNumber(characterId, slotNumber);
 
@@ -102,6 +112,5 @@ public class ShopItemService {
         }
         return false;  // Sale failed if no matching slot or item found
     }
-
 
 }

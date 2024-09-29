@@ -2,9 +2,12 @@ package com.dungeon.dungeonserve.services;
 
 import com.dungeon.dungeonserve.dto.BankDTO;
 import com.dungeon.dungeonserve.dto.BankInventorySlotDTO;
+import com.dungeon.dungeonserve.models.BankInventorySlot;
 import com.dungeon.dungeonserve.models.Character;
+import com.dungeon.dungeonserve.models.InventorySlot;
 import com.dungeon.dungeonserve.repository.BankInventorySlotRepository;
 import com.dungeon.dungeonserve.repository.CharacterRepository;
+import com.dungeon.dungeonserve.repository.InventorySlotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,9 @@ public class BankService {
 
     @Autowired
     private CharacterRepository characterRepository;
+
+    @Autowired
+    private InventorySlotRepository inventorySlotRepository;
 
     // Validate character ownership (can be used internally if needed)
     private Character validateCharacterOwnership(Long characterId) {
@@ -72,15 +78,55 @@ public class BankService {
         }
     }
 
-    // Move item from character inventory to bank
     public void moveToBank(Long characterId, Long inventorySlotId) {
         Character character = validateCharacterOwnership(characterId);
-        // Logic to transfer items to the bank.
+
+        // 1. Find the item in the character's inventory slot
+        InventorySlot inventorySlot = inventorySlotRepository.findById(inventorySlotId)
+                .orElseThrow(() -> new IllegalArgumentException("Inventory slot not found."));
+
+        if (inventorySlot.getEquipment() == null) {
+            throw new IllegalArgumentException("No item in this inventory slot to move.");
+        }
+
+        // 2. Find the first empty bank slot
+        BankInventorySlot emptyBankSlot = bankInventorySlotRepository
+                .findFirstByCharacterAndEquipmentIsNull(character)
+                .orElseThrow(() -> new IllegalArgumentException("No empty bank slots available."));
+
+        // 3. Move the equipment from the inventory slot to the empty bank slot
+        emptyBankSlot.setEquipment(inventorySlot.getEquipment());
+        bankInventorySlotRepository.save(emptyBankSlot);  // Save the updated bank slot
+
+        // 4. Clear the inventory slot
+        inventorySlot.setEquipment(null);
+        inventorySlotRepository.save(inventorySlot);  // Save the cleared inventory slot
     }
 
-    // Move item from bank to character inventory
     public void moveToInventory(Long characterId, Long bankSlotId) {
         Character character = validateCharacterOwnership(characterId);
-        // Logic to transfer items to the character's inventory.
+
+        // 1. Find the item in the bank slot
+        BankInventorySlot bankSlot = bankInventorySlotRepository.findById(bankSlotId)
+                .orElseThrow(() -> new IllegalArgumentException("Bank slot not found."));
+
+        if (bankSlot.getEquipment() == null) {
+            throw new IllegalArgumentException("No item in this bank slot to move.");
+        }
+
+        // 2. Find the first empty inventory slot
+        InventorySlot emptyInventorySlot = inventorySlotRepository.findFirstByCharacterAndEquipmentIsNull(character);
+
+        if (emptyInventorySlot == null) {
+            throw new IllegalArgumentException("No empty inventory slots available.");
+        }
+
+        // 3. Move the equipment from the bank slot to the empty inventory slot
+        emptyInventorySlot.setEquipment(bankSlot.getEquipment());
+        inventorySlotRepository.save(emptyInventorySlot);  // Save the updated inventory slot
+
+        // 4. Clear the bank slot
+        bankSlot.setEquipment(null);
+        bankInventorySlotRepository.save(bankSlot);  // Save the cleared bank slot
     }
 }

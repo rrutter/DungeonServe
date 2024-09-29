@@ -44,10 +44,16 @@ public class ShopItemController {
         Long shopItemId = requestBody.get("itemId");
         try {
             User currentUser = userService.getAuthenticatedUser();
-            shopService.buyItem(currentUser.getId(), shopItemId);
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Item purchased successfully!");
-            return ResponseEntity.ok(response);
+            boolean success = shopService.buyItem(currentUser.getId(), shopItemId);
+            if (success) {
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Item purchased successfully!");
+                return ResponseEntity.ok(response);
+            } else {
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("message", "Failed to purchase item.");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
         } catch (Exception e) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("message", "Failed to purchase item: " + e.getMessage());
@@ -76,6 +82,4 @@ public class ShopItemController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
-
-
 }

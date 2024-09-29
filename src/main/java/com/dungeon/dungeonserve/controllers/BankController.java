@@ -1,6 +1,9 @@
 package com.dungeon.dungeonserve.controllers;
 
 import com.dungeon.dungeonserve.dto.BankDTO;
+import com.dungeon.dungeonserve.dto.GoldTransactionRequestDTO;
+import com.dungeon.dungeonserve.dto.MoveToBankRequestDTO;
+import com.dungeon.dungeonserve.dto.MoveToInventoryRequestDTO;
 import com.dungeon.dungeonserve.models.User;
 import com.dungeon.dungeonserve.services.BankService;
 import com.dungeon.dungeonserve.services.UserService;
@@ -8,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/bank")
@@ -31,39 +37,48 @@ public class BankController {
         return ResponseEntity.ok(bank);
     }
 
-    // Deposit gold into the bank for the active character
     @PostMapping("/deposit")
-    public ResponseEntity<String> depositGold(@RequestBody int amount, Authentication authentication) {
+    public ResponseEntity<Map<String, String>> depositGold(@RequestBody GoldTransactionRequestDTO transactionDTO, Authentication authentication) {
         User user = userService.getAuthenticatedUser();
         Long activeCharacterId = userService.getActiveCharacterId(user);  // Get the active character
-        bankService.depositGold(activeCharacterId, amount);  // Deposit gold for active character
-        return ResponseEntity.ok("Gold deposited.");
+        bankService.depositGold(activeCharacterId, transactionDTO.getAmount());  // Deposit gold for active character
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Gold deposited successfully.");
+        return ResponseEntity.ok(response);
     }
 
-    // Withdraw gold from the bank for the active character
     @PostMapping("/withdraw")
-    public ResponseEntity<String> withdrawGold(@RequestBody int amount, Authentication authentication) {
+    public ResponseEntity<Map<String, String>> withdrawGold(@RequestBody GoldTransactionRequestDTO transactionDTO, Authentication authentication) {
         User user = userService.getAuthenticatedUser();
         Long activeCharacterId = userService.getActiveCharacterId(user);  // Get the active character
-        bankService.withdrawGold(activeCharacterId, amount);  // Withdraw gold for active character
-        return ResponseEntity.ok("Gold withdrawn.");
+        bankService.withdrawGold(activeCharacterId, transactionDTO.getAmount());  // Withdraw gold for active character
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Gold withdrawn successfully.");
+        return ResponseEntity.ok(response);
     }
 
-    // Move an item from inventory to the bank for the active character
     @PostMapping("/move-to-bank")
-    public ResponseEntity<String> moveToBank(@RequestBody Long inventorySlotId, Authentication authentication) {
+    public ResponseEntity<Map<String, String>> moveToBank(@RequestBody MoveToBankRequestDTO requestDTO, Authentication authentication) {
         User user = userService.getAuthenticatedUser();
         Long activeCharacterId = userService.getActiveCharacterId(user);  // Get the active character
-        bankService.moveToBank(activeCharacterId, inventorySlotId);  // Move item for active character
-        return ResponseEntity.ok("Item moved to bank.");
+        bankService.moveToBank(activeCharacterId, requestDTO.getSlotId());  // Move item for active character
+
+        // Return a JSON response
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Item moved to bank.");
+        return ResponseEntity.ok(response);
     }
 
-    // Move an item from the bank to the inventory for the active character
+
     @PostMapping("/move-to-inventory")
-    public ResponseEntity<String> moveToInventory(@RequestBody Long bankSlotId, Authentication authentication) {
+    public ResponseEntity<Map<String, String>> moveToInventory(@RequestBody MoveToInventoryRequestDTO requestDTO, Authentication authentication) {
         User user = userService.getAuthenticatedUser();
         Long activeCharacterId = userService.getActiveCharacterId(user);  // Get the active character
-        bankService.moveToInventory(activeCharacterId, bankSlotId);  // Move item for active character
-        return ResponseEntity.ok("Item moved to inventory.");
+        bankService.moveToInventory(activeCharacterId, requestDTO.getBankSlotId());  // Move item for active character
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Item moved to inventory.");
+        return ResponseEntity.ok(response);
     }
+
 }

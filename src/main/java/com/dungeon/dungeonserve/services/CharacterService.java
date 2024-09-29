@@ -5,10 +5,7 @@ import com.dungeon.dungeonserve.dto.InventorySlotDTO;
 import com.dungeon.dungeonserve.dto.CharacterGuildDTO;
 import com.dungeon.dungeonserve.models.*;
 import com.dungeon.dungeonserve.models.Character;
-import com.dungeon.dungeonserve.repository.CharacterGuildRepository;
-import com.dungeon.dungeonserve.repository.CharacterRepository;
-import com.dungeon.dungeonserve.repository.GuildRepository;
-import com.dungeon.dungeonserve.repository.InventorySlotRepository;
+import com.dungeon.dungeonserve.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +23,9 @@ public class CharacterService {
 
     @Autowired
     private CharacterGuildRepository characterGuildRepository;
+
+    @Autowired
+    private BankInventorySlotRepository bankInventorySlotRepository;
 
     @Autowired
     private GuildRepository guildRepository;
@@ -105,6 +105,14 @@ public class CharacterService {
             slot.setCharacter(character); // Set the saved character (with ID)
             slot.setSlotNumber(i);        // Slot number from 1 to 25
             inventorySlotRepository.save(slot); // Save each slot
+        }
+
+        // Step 3: Initialize bank with 40 empty slots
+        for (int i = 1; i <= 40; i++) {
+            BankInventorySlot bankSlot = new BankInventorySlot();
+            bankSlot.setCharacter(character); // Set the saved character (with ID)
+            bankSlot.setSlotNumber(i);        // Slot number from 1 to 40
+            bankInventorySlotRepository.save(bankSlot); // Save each bank slot
         }
 
         // Return the saved character with initialized inventory
