@@ -30,6 +30,11 @@ public class CharacterService {
     @Autowired
     private GuildRepository guildRepository;
 
+    @Autowired
+    private DungeonRepository dungeonRepository;
+
+    @Autowired
+    private CharacterUnlockedDungeonRepository characterUnlockedDungeonRepository;
 
     // Convert Character to CharacterDTO
     public CharacterDTO convertToDTO(Character character) {
@@ -100,23 +105,48 @@ public class CharacterService {
         character = characterRepository.save(character);
 
         // Step 2: Initialize inventory with 25 empty slots
+        initializeInventorySlots(character);
+
+        // Step 3: Initialize bank with 40 empty slots
+        initializeBankSlots(character);
+
+        // Step 4: Unlock the first dungeon for the character
+        unlockInitialDungeonForCharacter(character);
+
+        // Return the saved character with initialized inventory
+        return character;
+    }
+
+    // Initialize Inventory Slots
+    private void initializeInventorySlots(Character character) {
         for (int i = 1; i <= 25; i++) {
             InventorySlot slot = new InventorySlot();
             slot.setCharacter(character); // Set the saved character (with ID)
             slot.setSlotNumber(i);        // Slot number from 1 to 25
             inventorySlotRepository.save(slot); // Save each slot
         }
+    }
 
-        // Step 3: Initialize bank with 40 empty slots
+    // Initialize Bank Slots
+    private void initializeBankSlots(Character character) {
         for (int i = 1; i <= 40; i++) {
             BankInventorySlot bankSlot = new BankInventorySlot();
             bankSlot.setCharacter(character); // Set the saved character (with ID)
             bankSlot.setSlotNumber(i);        // Slot number from 1 to 40
             bankInventorySlotRepository.save(bankSlot); // Save each bank slot
         }
+    }
 
-        // Return the saved character with initialized inventory
-        return character;
+    // Unlock the first dungeon for a new character
+    private void unlockInitialDungeonForCharacter(Character character) {
+        Dungeon firstDungeon = dungeonRepository.findByName("Forgotten Caverns").orElse(null);
+
+        if (firstDungeon != null) {
+            CharacterUnlockedDungeon unlockedDungeon = new CharacterUnlockedDungeon();
+            unlockedDungeon.setCharacterId(character.getId());  // Setting character ID directly
+            unlockedDungeon.setDungeonId(firstDungeon.getId()); // Setting dungeon ID directly
+            characterUnlockedDungeonRepository.save(unlockedDungeon);
+        }
     }
 
     // Assign the default "Nomad" guild to a new character if they don't have a guild
