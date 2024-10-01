@@ -2,45 +2,76 @@ package com.dungeon.dungeonserve.controllers;
 
 import com.dungeon.dungeonserve.dto.CharacterWornDTO;
 import com.dungeon.dungeonserve.models.CharacterWorn;
+import com.dungeon.dungeonserve.models.User;
 import com.dungeon.dungeonserve.services.CharacterWornService;
+import com.dungeon.dungeonserve.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
-@RequestMapping("/api/characters/{characterId}/worn")
+@RequestMapping("/api/characters/worn")
 public class CharacterWornController {
 
     @Autowired
     private CharacterWornService characterWornService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping
-    public ResponseEntity<CharacterWornDTO> getCharacterWorn(@PathVariable Long characterId) {
-        CharacterWorn characterWorn = characterWornService.getOrCreateCharacterWorn(characterId);
+    public ResponseEntity<CharacterWornDTO> getCharacterWorn() {
+        User user = userService.getAuthenticatedUser();
+        Long activeCharacterId = user.getActiveCharacterId();
+        CharacterWorn characterWorn = characterWornService.getOrCreateCharacterWorn(activeCharacterId);
         CharacterWornDTO dto = characterWornService.mapToDTO(characterWorn);
-
         return ResponseEntity.ok(dto);
     }
 
-    // Equip an item to a specific slot
     @PostMapping("/equip")
-    public ResponseEntity<CharacterWorn> equipItem(@PathVariable Long characterId, @RequestParam Long equipmentId, @RequestParam String slot) {
-        characterWornService.equipItem(characterId, equipmentId, slot);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Map<String, String>> equipItem(@RequestBody Map<String, Object> payload) {
+        User user = userService.getAuthenticatedUser();
+        Long activeCharacterId = user.getActiveCharacterId();
+
+        // Extracting inventorySlotNumber from the JSON payload
+        int inventorySlotNumber = (int) payload.get("slot");
+
+        // Equip item based on the equipment's wornSlot field
+        boolean success = characterWornService.equipItemFromInventory(activeCharacterId, inventorySlotNumber);
+
+        Map<String, String> response = new HashMap<>();
+
+        if (success) {
+            response.put("status", "success");
+            return ResponseEntity.ok(response); // Return JSON { "status": "success" }
+        } else {
+            response.put("error", "No equipment found in the given inventory slot or slot is already occupied.");
+            return ResponseEntity.badRequest().body(response); // Return JSON { "error": "message" }
+        }
     }
 
-    // Unequip an item from a specific slot
     @PostMapping("/unequip")
-    public ResponseEntity<Void> unequipItem(@PathVariable Long characterId, @RequestParam String slot) {
-        characterWornService.removeItemFromSlot(characterId, slot);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Map<String, String>> unequipItem(@RequestBody Map<String, Object> payload) {
+        User user = userService.getAuthenticatedUser();
+        Long activeCharacterId = user.getActiveCharacterId();
+
+        String wornSlot = (String) payload.get("slot");
+
+        boolean success = characterWornService.unequipItemAndMoveToInventory(activeCharacterId, wornSlot);
+
+        Map<String, String> response = new HashMap<>();
+
+        if (success) {
+            response.put("status", "success");
+            return ResponseEntity.ok(response); // Return JSON { "status": "success" }
+        } else {
+            response.put("error", "No available inventory slots to unequip the item.");
+            return ResponseEntity.badRequest().body(response); // Return JSON { "error": "message" }
+        }
     }
 
-    // Initialize CharacterWorn if it doesn't exist
-    @GetMapping("/init")
-    public ResponseEntity<CharacterWornDTO> initCharacterWorn(@PathVariable Long characterId) {
-        CharacterWorn characterWorn = characterWornService.getOrCreateCharacterWorn(characterId);
-        CharacterWornDTO dto = characterWornService.mapToDTO(characterWorn);
-        return ResponseEntity.ok(dto);
-    }
+
 }
